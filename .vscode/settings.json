@@ -1,0 +1,11 @@
+{
+  "terminal.integrated.shellArgs.osx": [],
+  "terminal.integrated.shellArgs.linux": ["-i"],
+
+  "editor.renderWhitespace": "all",
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "editor.tabSize": 2,
+  "typescript.locale": "en",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
+}
