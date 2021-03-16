@@ -49,8 +49,8 @@ module.exports = {
     ],
   },
   devServer: {
-    // contentBase: path.join(__dirname, './public'),
-    // watchContentBase: true,
+    contentBase: path.join(__dirname, './public'),
+    watchContentBase: true,
     host: '0.0.0.0',
     port: PORT,
     allowedHosts: [localIP],
