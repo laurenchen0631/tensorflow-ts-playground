@@ -2,4 +2,5 @@
 // import 'iris';
 // import 'breastCancer';
 // import 'reader';
-import 'handwriting';
+// import 'handwriting';
+import 'fashion';

@@ -1,6 +1,6 @@
 import * as tf from '@tensorflow/tfjs';
 import * as tfvis from '@tensorflow/tfjs-vis';
-import {MnistData} from './data';
+import {FMnistData} from './data';
 
 const model = getModel();
 
@@ -59,24 +59,47 @@ function createElements() {
     const tensor = resized.expandDims(0);
     const prediction = model.predict(tensor) as tf.Tensor<tf.Rank>;
     const pIndex = tf.argMax(prediction, 1).dataSync();
+    const classNames = [
+      'T-shirt/top',
+      'Trouser',
+      'Pullover',
+      'Dress',
+      'Coat',
+      'Sandal',
+      'Shirt',
+      'Sneaker',
+      'Bag',
+      'Ankle boot',
+    ];
 
-    alert(pIndex);
+    alert(classNames[pIndex as any]);
   }
 }
 
 function getModel(): tf.Sequential {
+  // In the space below create a convolutional neural network that can classify the
+  // images of articles of clothing in the Fashion MNIST dataset. Your convolutional
+  // neural network should only use the following layers: conv2d, maxPooling2d,
+  // flatten, and dense. Since the Fashion MNIST has 10 classes, your output layer
+  // should have 10 units and a softmax activation function. You are free to use as
+  // many layers, filters, and neurons as you like.
+  // HINT: Take a look at the MNIST example.
   const model = tf.sequential();
 
   model.add(
     tf.layers.conv2d({inputShape: [28, 28, 1], kernelSize: 3, filters: 8, activation: 'relu'}),
   );
-  model.add(tf.layers.maxPooling2d({poolSize: [2, 2]}));
-  model.add(tf.layers.conv2d({filters: 16, kernelSize: 3, activation: 'relu'}));
-  model.add(tf.layers.maxPooling2d({poolSize: [2, 2]}));
+  model.add(tf.layers.maxPooling2d({poolSize: 2}));
+  model.add(tf.layers.conv2d({filters: 16, kernelSize: 2, activation: 'relu'}));
+  model.add(tf.layers.maxPooling2d({poolSize: 2}));
+
   model.add(tf.layers.flatten());
-  model.add(tf.layers.dense({units: 128, activation: 'relu'}));
+  // model.add(tf.layers.dense({units: 200, activation: 'sigmoid'}));
+  model.add(tf.layers.dense({units: 100, activation: 'relu'}));
   model.add(tf.layers.dense({units: 10, activation: 'softmax'}));
 
+  // Compile the model using the categoricalCrossentropy loss,
+  // the tf.train.adam() optimizer, and accuracy for your metrics.
   model.compile({
     optimizer: tf.train.adam(),
     loss: 'categoricalCrossentropy',
@@ -86,20 +109,35 @@ function getModel(): tf.Sequential {
   return model;
 }
 
-async function train(model: tf.Sequential, data: MnistData) {
-  const metrics = ['loss', 'val_loss', 'acc', 'val_acc'];
-  const container = {name: 'Model Training', styles: {height: '640px'}};
-  const fitCallbacks = tfvis.show.fitCallbacks(container, metrics);
+async function train(model: tf.Sequential, data: FMnistData) {
+  // Set the following metrics for the callback: 'loss', 'val_loss', 'accuracy', 'val_accuracy'.
+
+  // Create the container for the callback. Set the name to 'Model Training' and
+  // use a height of 1000px for the styles.
+
+  // Use tfvis.show.fitCallbacks() to setup the callbacks.
+  // Use the container and metrics defined above as the parameters.
+  const fitCallbacks = tfvis.show.fitCallbacks(
+    {name: 'Model Training', styles: {height: '1000px'}},
+    ['loss', 'acc'],
+    // ['loss', 'val_loss', 'acc', 'val_acc'],
+  );
 
   const BATCH_SIZE = 512;
-  const TRAIN_DATA_SIZE = 5500;
+  const TRAIN_DATA_SIZE = 6000;
   const TEST_DATA_SIZE = 1000;
 
+  // Get the training batches and resize them. Remember to put your code
+  // inside a tf.tidy() clause to clean up all the intermediate tensors.
+  // HINT: Take a look at the MNIST example.
   const [trainXs, trainYs] = tf.tidy(() => {
     const d = data.nextTrainBatch(TRAIN_DATA_SIZE);
     return [d.xs.reshape([TRAIN_DATA_SIZE, 28, 28, 1]), d.labels];
   });
 
+  // Get the testing batches and resize them. Remember to put your code
+  // inside a tf.tidy() clause to clean up all the intermediate tensors.
+  // HINT: Take a look at the MNIST example.
   const [testXs, testYs] = tf.tidy(() => {
     const d = data.nextTestBatch(TEST_DATA_SIZE);
     return [d.xs.reshape([TEST_DATA_SIZE, 28, 28, 1]), d.labels];
@@ -108,19 +146,20 @@ async function train(model: tf.Sequential, data: MnistData) {
   return model.fit(trainXs, trainYs, {
     batchSize: BATCH_SIZE,
     validationData: [testXs, testYs],
-    epochs: 20,
+    epochs: 10,
     shuffle: true,
     callbacks: fitCallbacks,
   });
 }
 
 async function run() {
-  const data = new MnistData();
+  const data = new FMnistData();
   await data.load();
   tfvis.show.modelSummary({name: 'Model Architecture'}, model);
   await train(model, data);
+  // await model.save('downloads://my_model');
   createElements();
-  alert('Training is done, try classifying your handwriting!');
+  // alert('Training is done, try classifying your handwriting!');
 }
 
 run();
