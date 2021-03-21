@@ -87,10 +87,8 @@ function getModel(): tf.Sequential {
   const model = tf.sequential();
 
   model.add(
-    tf.layers.conv2d({inputShape: [28, 28, 1], kernelSize: 3, filters: 8, activation: 'relu'}),
+    tf.layers.conv2d({inputShape: [28, 28, 1], kernelSize: 6, filters: 34, activation: 'relu'}),
   );
-  model.add(tf.layers.maxPooling2d({poolSize: 2}));
-  model.add(tf.layers.conv2d({filters: 16, kernelSize: 2, activation: 'relu'}));
   model.add(tf.layers.maxPooling2d({poolSize: 2}));
 
   model.add(tf.layers.flatten());
@@ -157,7 +155,7 @@ async function run() {
   await data.load();
   tfvis.show.modelSummary({name: 'Model Architecture'}, model);
   await train(model, data);
-  // await model.save('downloads://my_model');
+  await model.save('downloads://my_model');
   createElements();
   // alert('Training is done, try classifying your handwriting!');
 }
