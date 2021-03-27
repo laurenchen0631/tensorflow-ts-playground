@@ -7,4 +7,5 @@
 // import 'toxicity';
 // import 'mobilenet';
 // import 'linear-json';
-import 'RockPaperScissors';
+// import 'RockPaperScissors';
+import 'LizardSpock';
