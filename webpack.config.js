@@ -27,7 +27,7 @@ module.exports = {
     path: path.join(__dirname, './public'),
     filename: '[name].[contenthash].js',
     chunkFilename: '[name].[contenthash].js',
-    publicPath: `http://${localIP}:${PORT}/`,
+    publicPath: `https://${localIP}:${PORT}/`,
   },
   resolve: {
     modules: [path.resolve(__dirname, './src'), 'node_modules'],
@@ -62,6 +62,7 @@ module.exports = {
     clientLogLevel: 'error',
     compress: true,
     overlay: true,
+    http2: true,
   },
   plugins: [
     new HtmlWebpackPlugin({

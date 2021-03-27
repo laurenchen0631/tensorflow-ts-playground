@@ -6,4 +6,5 @@
 // import 'fashion';
 // import 'toxicity';
 // import 'mobilenet';
-import 'linear-json';
+// import 'linear-json';
+import 'RockPaperScissors';
